@@ -12,19 +12,27 @@ app.post("/mflix/comments", async (req, res) => {
     res.status(201).end(JSON.stringify(commentDB));
 });
 app.put("/mflix/comments", async (req, res) => {
-    //TODO update comment
+    //update comment
     //req.body {"commentId":<string>, "text":<string>}
+    const commentUpdated = await mflixService.updateCommentText(req.body);
+    res.status(200).end(JSON.stringify(commentUpdated));
 });
 app.delete("/mflix/comments/:id", async (req, res) => {
-    //TODO delete comment
+    // delete comment
    // req.params.id - comment to delete
+   const deletedComment = await mflixService.deleteComment(req.params.id);
+   res.status(200).end(JSON.stringify(deletedComment));
 })
 app.get("/mflix/comments/:id", async (req, res) => {
-    //TODO get comment
+    //get comment
    // req.params.id - comment to get
+   const comment = await mflixService.getComment(req.params.id);
+   res.status(200).end(JSON.stringify(comment));
 })
 app.post("/mflix/movies/rated", async (req, res) => {
-    //TODO find most imdb rated movies
+    //find most imdb rated movies
    // req.body {"year":<number>(optional), "genre":<string>(optional),
    // "acter":<string-regex>(optional), "amount":<number>(mandatary)}
+   const movies = await mflixService.getMostRatedMovies(req.body);
+   res.status(200).end(JSON.stringify(movies));
 })
