@@ -42,6 +42,18 @@ export default class AccountsService {
         await this.#accounts.deleteOne({ _id: username });
         return account;
     }
+    async getTimestampCounter(username){
+      const {timestamp, counter} = await this.#accounts.findOne({_id:username}, {fields:{timestamp:1, counter:1}});
+      return {timestamp, counter} ;
+    }
+    async setTimestampCounter(username, {timestamp, counter}){
+        return this.#accounts.findOneAndUpdate({_id:username},{$set:{timestamp, counter}},
+             {returnDocument:'after'});
+    }
+    async setRole({username, role}) {
+       await this.getAccount(username);
+       return this.#accounts.findOneAndUpdate({_id: username}, {$set:{role}}, {returnDocument:"after"});
+    }
     #toAccountDB(account) {
         const accountDB = {};
         accountDB._id = account.username;
