@@ -14,9 +14,11 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "config": "^3.3.12",
     "express": "^4.21.1",
     "express-async-handler": "^1.2.0",
     "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.11.0"
   }
 }

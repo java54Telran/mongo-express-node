@@ -1,0 +1,7 @@
+{
+    "time_window_millisec":60000,
+    "jwt" : {
+        "expiresIn":"1h",
+        "secret":"JWT_SECRET"
+    }
+}

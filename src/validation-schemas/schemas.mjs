@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { ADD_UPDATE_ACCOUNT, ADD_UPDATE_COMMENT, GET_MOVIES_RATED, SET_ROLE_ACCOUNT } from "../config/pathes.mjs";
+import { ADD_UPDATE_ACCOUNT, ADD_UPDATE_COMMENT, GET_MOVIES_RATED, LOGIN, SET_ROLE_ACCOUNT } from "../config/pathes.mjs";
 import roles from "../config/mflix-autorization-config.mjs";
  const schemaObjectId = Joi.string().hex().length(24).required();
  const schemaCommentUpdate = Joi.object({
@@ -39,6 +39,10 @@ import roles from "../config/mflix-autorization-config.mjs";
  const schemaSetRole = Joi.object({
     username: Joi.string().min(4).required(),
     role: Joi.string().valid(...Object.keys(roles)).required()
+ });
+ const schemaLogin = Joi.object({
+    username: Joi.string().min(4).required(),
+    password: Joi.string().min(8).required()
  })
   const schemas = {
    [ ADD_UPDATE_COMMENT]: {
@@ -55,6 +59,9 @@ import roles from "../config/mflix-autorization-config.mjs";
     },
     [SET_ROLE_ACCOUNT] :{
         PUT: schemaSetRole
+    },
+    [LOGIN] : {
+        POST: schemaLogin
     }
 
     

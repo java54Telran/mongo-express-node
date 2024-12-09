@@ -1,5 +1,5 @@
-import { getError } from "../errors/error.mjs"
-const TIME_WINDOW_MILLIS = 60000;
+import { getError } from "../errors/error.mjs";
+import config from 'config'
 const LIMIT_REQUESTS_PER_TIME_WINDOW = 2;
 const roles = {
     USER: userAuthorizationFunction,
@@ -7,11 +7,12 @@ const roles = {
     ADMIN: async(accountsService, username) => {throw getError(403, '')}
 };
 async function userAuthorizationFunction(accountsService, username) {
+    const TIME_WINDOW_MILLIS = config.get("time_window.millisec");
     //one user cannot send several requests simultaneously 
     const currentTime  = new Date().getTime();
    let {timestamp, counter} = await accountsService.getTimestampCounter(username);
     if (timestamp && (currentTime - timestamp) < TIME_WINDOW_MILLIS) {
-        if (counter == LIMIT_REQUESTS_PER_TIME_WINDOW) {
+        if (counter >= LIMIT_REQUESTS_PER_TIME_WINDOW) {
             throw getError(403, 'exceeded limit for role USER, upgrade account')
         } else {
             counter++;

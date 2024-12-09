@@ -1,12 +1,17 @@
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
 import { getError } from '../errors/error.mjs';
+import config from 'config'
 const BASIC = "Basic ";
+const BEARER = "Bearer "
 export function authenticate(accountingService) {
     return async (req, res, next) => {
         const authHeader = req.header("Authorization")
         if (authHeader) {
             if(authHeader.startsWith(BASIC)) {
                 await basicAuth(authHeader, req, accountingService)
+            } else if (authHeader.startsWith(BEARER)) {
+                jwtAuth(authHeader.substring(BEARER.length), req);
             }
         }
         next();
@@ -39,5 +44,15 @@ async function basicAuth(authHeader, req, accountingService) {
         
     }
 
+
+}
+function jwtAuth(token, req){
+    try {
+        const payload = jwt.verify(token, process.env[config.get("jwt.secret")]);
+        req.user = payload.sub;
+        req.role = payload.role;
+    } catch (error) {
+        console.log(error)
+    }
 
 }

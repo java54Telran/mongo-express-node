@@ -1,6 +1,8 @@
 import { getError } from "../errors/error.mjs";
 import MongoConnection from "../mongo/MongoConnection.mjs"
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import config from 'config'
 export default class AccountsService {
     #accounts
     #connection
@@ -54,6 +56,16 @@ export default class AccountsService {
        await this.getAccount(username);
        return this.#accounts.findOneAndUpdate({_id: username}, {$set:{role}}, {returnDocument:"after"});
     }
+    async login ({username, password}) {
+        const account = await this.getAccount(username);
+        if (!await bcrypt.compare(password, account.hashPassword)) {
+            throw getError(400, "incorrect username/password");
+        }
+        const token = getJWT(username, account.role || "USER");
+        return {token};
+
+    }
+    
     #toAccountDB(account) {
         const accountDB = {};
         accountDB._id = account.username;
@@ -61,4 +73,10 @@ export default class AccountsService {
         accountDB.hashPassword = bcrypt.hashSync(account.password, 10);
         return accountDB;
     }
+}
+function getJWT(username, role) {
+ return jwt.sign({role}, process.env[config.get("jwt.secret")], {
+    subject:username,
+    expiresIn:config.get("jwt.expiresIn")
+ })
 }

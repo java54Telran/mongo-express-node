@@ -1,7 +1,7 @@
 import express from 'express';
 export const accounts_route = express.Router();
 import asyncHandler from 'express-async-handler';
-import { ACCOUNTS_ACCOUNT, ACCOUNTS_SET_ROLE, DELETE_GET_ACCOUNT } from '../config/pathes.mjs';
+import { ACCOUNTS_ACCOUNT, ACCOUNTS_LOGIN, ACCOUNTS_SET_ROLE, DELETE_GET_ACCOUNT } from '../config/pathes.mjs';
 import { accountsService } from '../config/service.mjs';
 import { getError } from '../errors/error.mjs';
 accounts_route.post(ACCOUNTS_ACCOUNT, asyncHandler(async (req, res) => {
@@ -26,9 +26,13 @@ accounts_route.delete(DELETE_GET_ACCOUNT, asyncHandler(async (req, res) => {
     const account = await accountsService.deleteAccount(req.params.username);
    res.status(200).json(account);
 }))
+accounts_route.post(ACCOUNTS_LOGIN, asyncHandler(async (req, res) => {
+    const result = await accountsService.login(req.body);
+    res.status(200).json(result);
+}))
 accounts_route.put(ACCOUNTS_SET_ROLE,  asyncHandler(async (req, res) => {
     const header = req.header("Authorization");
-    if (!header.startsWith("Basic ")) {
+    if (!header?.startsWith("Basic ")) {
         throw getError(401, '');
     }
     const usernamePassword = Buffer.from(header.substring(6), "base64").toString("ascii").split(":");
